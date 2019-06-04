@@ -16,26 +16,12 @@ typedef struct dados {
 
 //função que retorna a linha da posição atual em que a thread está
 int retornaLinha(int posicaoAtual, int linha, int coluna){	
-	int soma=0;
-	for (int i=0; i<linha; i++){
-        	for (int j=0; j<coluna; j++){
-			if(posicaoAtual == i+j+soma)
-				return i;
-		}
-		soma = soma+2;
-	}
+	return posicaoAtual/coluna;
 }
 
 //função que retorna a coluna da posição atual em que a thread está
 int retornaColuna(int posicaoAtual, int linha, int coluna){
-	int soma=0;
-	for (int i=0; i<linha; i++){
-        	for (int j=0; j<coluna; j++){
-			if(posicaoAtual == i+j+soma)
-				return j;
-		}
-		soma = soma+2;
-	}
+	return posicaoAtual%coluna;
 }
 
 //Função que gira a matriz 90 graus para a direita, as threads percorrem a matriz de forma intercalada
@@ -45,11 +31,17 @@ void *inverte(void *argts){
 	int posicaoatual = argumentos->posicao;
 
 	while (posicaoatual<(argumentos->l * argumentos->c)){
-		int linhaAtual = retornaLinha(posicaoatual, argumentos->l, argumentos->c);
-		int colunaAtual = retornaColuna(posicaoatual, argumentos->l, argumentos->c);
-
-		argumentos->matrizInvertida[linhaAtual][colunaAtual] = argumentos->matriz[argumentos->c - colunaAtual - 1][linhaAtual];
-		posicaoatual = posicaoatual + argumentos->t;
+		if(argumentos->l != argumentos->c){
+			int linhaAtual = retornaLinha(posicaoatual, argumentos->l, argumentos->c);
+			int colunaAtual = retornaColuna(posicaoatual, argumentos->l, argumentos->c);
+			argumentos->matrizInvertida[colunaAtual][linhaAtual] = argumentos->matriz[linhaAtual][argumentos->c - colunaAtual - 1];
+			posicaoatual = posicaoatual + argumentos->t;
+		}else{
+			int linhaAtual = retornaLinha(posicaoatual, argumentos->l, argumentos->c);
+			int colunaAtual = retornaColuna(posicaoatual, argumentos->l, argumentos->c);	
+			argumentos->matrizInvertida[linhaAtual][colunaAtual] = argumentos->matriz[argumentos->c - colunaAtual - 1][linhaAtual];
+			posicaoatual = posicaoatual + argumentos->t;
+		}
 		
 	} 
 }
@@ -70,12 +62,11 @@ int main(int argc, char *argv[])
            fscanf(file, "%lf", &matriz[i][j]);
        }
   }
-
 	//alocação dinâmica da matriz invertida
- double **matrizInvertida = (double **)malloc(l * sizeof(double *));
-       for (int i = 0; i < l; i++){ 
-       	matrizInvertida[i] = (double*) malloc(c * sizeof(double)); 
-       	for (int j = 0; j < c; j++){ 
+ double **matrizInvertida = (double **)malloc(c * sizeof(double *));
+       for (int i = 0; i < c; i++){ 
+       	matrizInvertida[i] = (double*) malloc(l * sizeof(double)); 
+       	for (int j = 0; j < l; j++){ 
            matrizInvertida[i][j] = 0;
        }
   }
@@ -102,19 +93,18 @@ int main(int argc, char *argv[])
 
     	FILE *fileSaida = fopen(argv[5], "w");
 	
-	//escreve a matriz resultado (matriz invertida) em outro arquivo.
-   for ( int i=0; i<l; i++ ){
-        for (int j=0; j<c; j++ )
-        {
-            fprintf(fileSaida, "%0.2lf ", matrizInvertida[i][j]);
-        }
-        fprintf(fileSaida, "\n");
-    }
+	   //escreve a matriz resultado (matriz invertida) em outro arquivo.
+	   for ( int i=0; i<c; i++ ){
+		for (int j=0; j<l; j++ )
+		{
+		    fprintf(fileSaida, "%0.2lf ", matrizInvertida[i][j]);
+		}
+		fprintf(fileSaida, "\n");
+	    }
 
 	fclose(file);
 	fclose(fileSaida);
 
     return 0;
 }
-
 
