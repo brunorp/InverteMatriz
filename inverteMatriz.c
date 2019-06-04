@@ -29,14 +29,15 @@ void *inverte(void *argts){
 	DADOS *argumentos = argts;
 	                                              
 	int posicaoatual = argumentos->posicao;
-
+	
+	//Percorre a matriz da posição atual até o final dela.
 	while (posicaoatual<(argumentos->l * argumentos->c)){
-		if(argumentos->l != argumentos->c){
+		if(argumentos->l != argumentos->c){ //se a matriz não for quadrada
 			int linhaAtual = retornaLinha(posicaoatual, argumentos->l, argumentos->c);
 			int colunaAtual = retornaColuna(posicaoatual, argumentos->l, argumentos->c);
-			argumentos->matrizInvertida[colunaAtual][linhaAtual] = argumentos->matriz[linhaAtual][argumentos->c - colunaAtual - 1];
+			argumentos->matrizInvertida[colunaAtual][linhaAtual] = argumentos->matriz[argumentos->l - linhaAtual - 1][colunaAtual];
 			posicaoatual = posicaoatual + argumentos->t;
-		}else{
+		}else{ //se a matriz for quadrada
 			int linhaAtual = retornaLinha(posicaoatual, argumentos->l, argumentos->c);
 			int colunaAtual = retornaColuna(posicaoatual, argumentos->l, argumentos->c);	
 			argumentos->matrizInvertida[linhaAtual][colunaAtual] = argumentos->matriz[argumentos->c - colunaAtual - 1][linhaAtual];
@@ -52,7 +53,8 @@ int main(int argc, char *argv[])
 	int l = atoi(argv[1]); //numero de linhas
 	int c = atoi(argv[2]); //numero de colunas
 	int t = atoi(argv[3]); //numero de threads
-    	FILE *file = fopen(argv[4], "r");	
+    	FILE *file = fopen(argv[4], "r");
+	float inicial = clock();	
     
 	//alocação dinâmica da matriz
     double **matriz = (double **)malloc(l * sizeof(double *));
@@ -89,6 +91,8 @@ int main(int argc, char *argv[])
 	for(int i=0; i<t; i++){	
 		pthread_join(threads[i], NULL);
 	}
+
+	float final = clock();
 	
 
     	FILE *fileSaida = fopen(argv[5], "w");
@@ -105,6 +109,9 @@ int main(int argc, char *argv[])
 	fclose(file);
 	fclose(fileSaida);
 
+	float tep = (final - inicial) * 1000.0 / CLOCKS_PER_SEC;
+	printf("%f \n", tep);
+
+
     return 0;
 }
-
