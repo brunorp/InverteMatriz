@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 	fclose(fileSaida);
 
 	float tep = (final - inicial) * 1000.0 / CLOCKS_PER_SEC; //Cálcula o tempo gasto com N threads
-	printf("Tempo de execucação com [%d] threads: %f clocks por segundo \n", t,tep); 	//Imprime o tempo de execução com N threads
+	printf("Tempo de execucação com [%d] threads: %f milissegundos \n", t,tep); 	//Imprime o tempo de execução com N threads
 
 
     return 0;
